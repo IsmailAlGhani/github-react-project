@@ -1,64 +1,67 @@
-"use client";
-
-import { useState } from "react";
-import { UserSearch } from "@/components/user-search";
-import { UserList } from "@/components/user-list";
-import { RepositoryList } from "@/components/repository-list";
-import { useGitHubStore } from "@/lib/store";
-import { Github } from "lucide-react";
+import { useEffect, useState } from "react";
+import { BrowserRouter, Routes, Route, Navigate } from "react-router-dom";
+import { HomePage } from "@/pages/home-page";
+import { OfflinePage } from "@/pages/offline-page";
+import { Workbox } from "workbox-window";
 
 function App() {
-  const [searchQuery, setSearchQuery] = useState("");
-  const { selectedUser } = useGitHubStore();
+  const [isOnline, setIsOnline] = useState(navigator.onLine);
+
+  useEffect(() => {
+    // Register service worker
+    if ("serviceWorker" in navigator) {
+      const wb = new Workbox("/sw.js");
+
+      wb.addEventListener("installed", (event) => {
+        if (event && "isUpdate" in event && event.isUpdate === true) {
+          window.location.reload();
+        }
+      });
+
+      wb.addEventListener("waiting", () => {
+        wb.messageSkipWaiting();
+      });
+
+      wb.addEventListener("controlling", () => {
+        window.location.reload();
+      });
+
+      wb.register().catch((error) => {
+        console.error("Service worker registration failed:", error);
+      });
+    }
+
+    // Handle online/offline status
+    const handleOnline = () => {
+      setIsOnline(true);
+      window.location.reload();
+    };
+    const handleOffline = () => setIsOnline(false);
+
+    // Set initial online status
+    setIsOnline(navigator.onLine);
+
+    window.addEventListener("online", handleOnline);
+    window.addEventListener("offline", handleOffline);
+
+    return () => {
+      window.removeEventListener("online", handleOnline);
+      window.removeEventListener("offline", handleOffline);
+    };
+  }, []);
 
   return (
-    <div className="min-h-screen bg-gradient-to-br from-slate-50 to-slate-100 dark:from-slate-900 dark:to-slate-800">
-      <div className="container mx-auto px-4 py-8">
-        {/* Header */}
-        <div className="text-center mb-8">
-          <div className="flex items-center justify-center gap-3 mb-4">
-            <Github className="w-8 h-8 text-slate-700 dark:text-slate-300" />
-            <h1 className="text-3xl md:text-4xl font-bold text-slate-800 dark:text-slate-200">
-              GitHub Explorer
-            </h1>
-          </div>
-          <p className="text-slate-600 dark:text-slate-400 max-w-2xl mx-auto">
-            Search for GitHub users and explore their repositories. Discover
-            amazing projects and developers.
-          </p>
-        </div>
-
-        {/* Search Section */}
-        <div className="max-w-2xl mx-auto mb-8">
-          <UserSearch onSearch={setSearchQuery} />
-        </div>
-
-        {/* Content Grid */}
-        <div className="grid grid-cols-1 lg:grid-cols-2 gap-8">
-          {/* Users List */}
-          <div className="space-y-4">
-            <h2 className="text-xl font-semibold text-slate-800 dark:text-slate-200 mb-4">
-              {searchQuery
-                ? `Users matching "${searchQuery}"`
-                : "Search for users"}
-            </h2>
-            <UserList query={searchQuery} />
-          </div>
-
-          {/* Repositories List */}
-          <div className="space-y-4">
-            <h2 className="text-xl font-semibold text-slate-800 dark:text-slate-200 mb-4">
-              {selectedUser && searchQuery
-                ? `${selectedUser.login}'s Repositories`
-                : "Select a user to view repositories"}
-            </h2>
-            {selectedUser && searchQuery && (
-              <RepositoryList username={selectedUser.login} />
-            )}
-          </div>
-        </div>
-      </div>
-    </div>
+    <BrowserRouter>
+      {!isOnline ? (
+        <OfflinePage />
+      ) : (
+        <Routes>
+          <Route path="/" element={<HomePage />} />
+          <Route path="/offline" element={<OfflinePage />} />
+          <Route path="*" element={<Navigate to="/" replace />} />
+        </Routes>
+      )}
+    </BrowserRouter>
   );
 }
 
