@@ -1,17 +1,21 @@
 /// <reference lib="webworker" />
 
-import { clientsClaim } from 'workbox-core';
-import { precacheAndRoute } from 'workbox-precaching';
-import { registerRoute } from 'workbox-routing';
-import { NetworkFirst, CacheFirst, StaleWhileRevalidate } from 'workbox-strategies';
-import { ExpirationPlugin } from 'workbox-expiration';
-import { CacheableResponsePlugin } from 'workbox-cacheable-response';
+import { clientsClaim } from "workbox-core";
+import { precacheAndRoute } from "workbox-precaching";
+import { registerRoute } from "workbox-routing";
+import {
+  NetworkFirst,
+  CacheFirst,
+  StaleWhileRevalidate,
+} from "workbox-strategies";
+import { ExpirationPlugin } from "workbox-expiration";
+import { CacheableResponsePlugin } from "workbox-cacheable-response";
 
 // Take control of all pages immediately
 clientsClaim();
 
 // Skip waiting on install
-self.addEventListener('install', () => {
+self.addEventListener("install", () => {
   self.skipWaiting();
 });
 
@@ -116,22 +120,20 @@ self.addEventListener("activate", (event) => {
 });
 
 // Offline fallback
-self.addEventListener('fetch', (event: FetchEvent) => {
-  if (event.request.mode === 'navigate') {
+self.addEventListener("fetch", (event: FetchEvent) => {
+  if (event.request.mode === "navigate") {
     event.respondWith(
-      fetch(event.request)
-        .catch(() => 
-          caches.match('/index.html')
-            .then(response => {
-              if (response) {
-                return response;
-              }
-              return new Response('Offline page not available', {
-                status: 503,
-                statusText: 'Service Unavailable',
-              });
-            })
-        )
+      fetch(event.request).catch(() =>
+        caches.match("/index.html").then((response) => {
+          if (response) {
+            return response;
+          }
+          return new Response("Offline page not available", {
+            status: 503,
+            statusText: "Service Unavailable",
+          });
+        })
+      )
     );
   }
 });
