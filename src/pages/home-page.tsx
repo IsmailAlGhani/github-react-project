@@ -1,13 +1,10 @@
 import { useState } from "react";
 import { UserSearch } from "@/components/user-search";
 import { UserList } from "@/components/user-list";
-import { RepositoryList } from "@/components/repository-list";
-import { useGitHubStore } from "@/lib/store";
 import { Github } from "lucide-react";
 
 export function HomePage() {
   const [searchQuery, setSearchQuery] = useState("");
-  const { selectedUser } = useGitHubStore();
 
   return (
     <div className="min-h-screen bg-gradient-to-br from-slate-50 to-slate-100 dark:from-slate-900 dark:to-slate-800">
@@ -31,28 +28,15 @@ export function HomePage() {
           <UserSearch onSearch={setSearchQuery} />
         </div>
 
-        {/* Content Grid */}
-        <div className="grid grid-cols-1 lg:grid-cols-2 gap-8">
-          {/* Users List */}
+        {/* Content */}
+        <div className="max-w-3xl mx-auto">
+          <h2 className="text-xl font-semibold text-slate-800 dark:text-slate-200 mb-4">
+            {searchQuery
+              ? `Users matching "${searchQuery}"`
+              : "Search for users"}
+          </h2>
           <div className="space-y-4">
-            <h2 className="text-xl font-semibold text-slate-800 dark:text-slate-200 mb-4">
-              {searchQuery
-                ? `Users matching "${searchQuery}"`
-                : "Search for users"}
-            </h2>
             <UserList query={searchQuery} />
-          </div>
-
-          {/* Repositories List */}
-          <div className="space-y-4">
-            <h2 className="text-xl font-semibold text-slate-800 dark:text-slate-200 mb-4">
-              {selectedUser && searchQuery
-                ? `${selectedUser.login}'s Repositories`
-                : "Select a user to view repositories"}
-            </h2>
-            {selectedUser && searchQuery && (
-              <RepositoryList username={selectedUser.login} />
-            )}
           </div>
         </div>
       </div>
