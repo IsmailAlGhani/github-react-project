@@ -1,6 +1,7 @@
 import { useState } from "react";
 import { UserSearch } from "@/components/user-search";
 import { UserList } from "@/components/user-list";
+import { ThemeSwitcher } from "@/components/theme-switcher";
 import { Github } from "lucide-react";
 
 export function HomePage() {
@@ -16,6 +17,7 @@ export function HomePage() {
             <h1 className="text-3xl md:text-4xl font-bold text-slate-800 dark:text-slate-200">
               GitHub Explorer
             </h1>
+            <ThemeSwitcher />
           </div>
           <p className="text-slate-600 dark:text-slate-400 max-w-2xl mx-auto">
             Search for GitHub users and explore their repositories. Discover

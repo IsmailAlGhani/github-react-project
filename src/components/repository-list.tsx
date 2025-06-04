@@ -1,14 +1,14 @@
-"use client"
+"use client";
 
-import { useQuery } from "@tanstack/react-query"
-import { RepositoryCard } from "@/components/repository-card"
-import { LoadingSpinner } from "@/components/loading-spinner"
-import { ErrorMessage } from "@/components/error-message"
-import { getUserRepositories } from "@/lib/github-api"
-import { FolderGit2 } from "lucide-react"
+import { useQuery } from "@tanstack/react-query";
+import { RepositoryCard } from "@/components/repository-card";
+import { LoadingSpinner } from "@/components/loading-spinner";
+import { ErrorMessage } from "@/components/error-message";
+import { getUserRepositories } from "@/lib/github-api";
+import { FolderGit2 } from "lucide-react";
 
 interface RepositoryListProps {
-  username: string
+  username: string;
 }
 
 export function RepositoryList({ username }: RepositoryListProps) {
@@ -23,14 +23,14 @@ export function RepositoryList({ username }: RepositoryListProps) {
     enabled: !!username,
     staleTime: 5 * 60 * 1000, // 5 minutes
     gcTime: 10 * 60 * 1000, // 10 minutes
-  })
+  });
 
   if (isLoading) {
-    return <LoadingSpinner message="Loading repositories..." />
+    return <LoadingSpinner message="Loading repositories..." />;
   }
 
   if (isError) {
-    return <ErrorMessage error={error} />
+    return <ErrorMessage error={error} />;
   }
 
   if (!repositories || repositories.length === 0) {
@@ -38,13 +38,15 @@ export function RepositoryList({ username }: RepositoryListProps) {
       <div className="text-center py-8 text-slate-500 dark:text-slate-400">
         <FolderGit2 className="w-8 h-8 mx-auto mb-2 opacity-50" />
         <p>No public repositories found</p>
-        <p className="text-sm mt-1">This user hasn't created any public repositories yet</p>
+        <p className="text-sm mt-1">
+          This user hasn't created any public repositories yet
+        </p>
       </div>
-    )
+    );
   }
 
   return (
-    <div className="space-y-3 max-h-[600px] overflow-y-auto pr-2">
+    <div className="space-y-3 max-h-[600px] overflow-y-auto px-2">
       {repositories.map((repo) => (
         <RepositoryCard key={repo.id} repository={repo} />
       ))}
@@ -52,5 +54,5 @@ export function RepositoryList({ username }: RepositoryListProps) {
         Showing {repositories.length} repositories
       </p>
     </div>
-  )
+  );
 }
