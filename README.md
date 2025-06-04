@@ -20,6 +20,6 @@ This application is built using the following technologies:
 
 ## Live Preview
 
-Check out the live demo of the application here: [GitHub Explorer](github-react-project-ebon.vercel.app)
+Check out the live demo of the application here: [GitHub Explorer](https://github-react-project-ebon.vercel.app/)
 
 Explore GitHub profiles with a modern and intuitive interface!
